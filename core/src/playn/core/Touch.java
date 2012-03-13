@@ -109,6 +109,13 @@ public interface Touch {
      * @param touches one or more {@link Event}s.
      */
     void onTouchEnd(Event[] touches);
+
+    /**
+     * Called when a touch is canceled.
+     *
+     * @param touches one or more {@link Event}s.
+     */
+    void onTouchCancel(Event[] touches);
   }
 
   /**
@@ -121,6 +128,8 @@ public interface Touch {
     public void onTouchMove(Event[] touches) { /* NOOP! */ }
     @Override
     public void onTouchEnd(Event[] touches) { /* NOOP! */ }
+    @Override
+    public void onTouchCancel(Event[] touches) { /* NOOP! */ }
   }
 
   /**
