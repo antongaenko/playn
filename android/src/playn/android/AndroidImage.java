@@ -51,9 +51,11 @@ class AndroidImage extends ImageGL implements AndroidGLContext.Refreshable {
     clearTexture(ctx);
   }
 
+  @Override
   public void destroy() {
     ctx.removeRefreshable(this);
     clearTexture(ctx);
+    bitmap.recycle();
   }
 
   @Override

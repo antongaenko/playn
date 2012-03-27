@@ -32,4 +32,10 @@ public class CanvasLayerGL extends ImageLayerGL implements CanvasLayer
   public Canvas canvas() {
     return ((CanvasImage) image()).canvas();
   }
+
+  @Override
+  public void destroy() {
+    ((ImageGL) image()).destroy();
+    super.destroy();
+  }
 }

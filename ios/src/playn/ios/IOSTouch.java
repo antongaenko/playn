@@ -55,7 +55,7 @@ class IOSTouch implements Touch
 
   void onTouchesCancelled(NSSet touches, UIEvent event) {
     if (listener != null) {
-      // TODO: ???
+      listener.onTouchCancel(toTouchEvents(touches, event));
     }
   }
 

@@ -17,11 +17,9 @@ package playn.android;
 
 import static playn.core.PlayN.log;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 
+import android.graphics.Typeface;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -180,6 +178,20 @@ public class AndroidAssets extends AbstractAssets {
       } finally {
         is.close();
       }
+    } catch (IOException e) {
+      callback.error(e);
+    }
+  }
+
+  protected void doGetFont(final String path, final ResourceCallback<Typeface> callback) {
+    try {
+      File cachedFile = new File(AndroidPlatform.instance.activity.getFilesDir(), "font-" + Util.md5(path) + ".ttf");
+      if (!cachedFile.exists()) {
+        InputStream in = openAsset(path);
+        FileOutputStream out = new FileOutputStream(cachedFile);
+        Util.copyStream(in, out);
+      }
+      callback.done(Typeface.createFromFile(cachedFile));
     } catch (IOException e) {
       callback.error(e);
     }

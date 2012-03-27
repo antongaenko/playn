@@ -29,3 +29,5 @@ pythagoras
 /tests/html/war/manualtestsgame
 /tests/html/gwt-unitCache
 /tests/flash/war/WEB-INF/classes
+
+*.iml

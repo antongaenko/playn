@@ -208,7 +208,11 @@ public abstract class GameActivity extends Activity {
    */
   @Override
   public boolean onTouchEvent(MotionEvent event) {
-    return AndroidPlatform.instance.touchEventHandler().onMotionEvent(event);
+    if (AndroidPlatform.initialized) {
+      return AndroidPlatform.instance.touchEventHandler().onMotionEvent(event);
+    } else {
+      return false;
+    }
   }
 
   // TODO: uncomment the remaining key codes when we upgrade to latest Android jars

@@ -29,6 +29,7 @@ public class AndroidPlatform implements Platform {
   public static final boolean DEBUG_LOGS = true;
 
   static AndroidPlatform instance;
+  static boolean initialized;
   private static AndroidGL20 gl20;
 
   public static void register(AndroidGL20 _gl20, GameActivity activity) {
@@ -67,6 +68,7 @@ public class AndroidPlatform implements Platform {
     assets = new AndroidAssets(activity.getAssets());
     analytics = new AndroidAnalytics();
     storage = new AndroidStorage(activity);
+    initialized = true;
   }
 
   @Override

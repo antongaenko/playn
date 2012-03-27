@@ -58,6 +58,11 @@ public abstract class ImageGL implements Image {
   }
 
   /**
+   *
+   */
+  public void destroy() {};
+
+  /**
    * Increments this image's reference count. Called by {@link ImageLayerGL} to let the image know
    * that it's part of the scene graph. Note that this reference counting mechanism only exists to
    * make more efficient use of texture memory. Images are also used by things like {@link Pattern}

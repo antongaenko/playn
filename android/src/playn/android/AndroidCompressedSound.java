@@ -15,17 +15,13 @@
  */
 package playn.android;
 
-import static playn.core.PlayN.log;
-
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnErrorListener;
 import android.util.Log;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+
+import static playn.core.PlayN.log;
 
 /**
  * An implementation of AndroidSound using the Android MediaPlayer
@@ -37,30 +33,22 @@ public class AndroidCompressedSound extends AndroidSound {
   private float volume = 0.99f;
   private int position;
   private MediaPlayer mp;
+  private boolean intitalized;
 
-  public AndroidCompressedSound(InputStream in, String extension) throws IOException {
-    cachedFile = new File(AndroidPlatform.instance.activity.getFilesDir(), "sound-" + Integer.toHexString(hashCode())
+  public AndroidCompressedSound(String path, InputStream in, String extension) throws IOException {
+    cachedFile = new File(AndroidPlatform.instance.activity.getFilesDir(), "sound-" + Util.md5(path)
         + extension);
     try {
       FileOutputStream out = new FileOutputStream(cachedFile);
-      try {
-        byte[] buffer = new byte[16 * 1024];
-        while (true) {
-          int r = in.read(buffer);
-          if (r < 0)
-            break;
-          out.write(buffer, 0, r);
-        }
-      } finally {
-        out.close();
-      }
-    } finally {
-      in.close();
+      Util.copyStream(in, out);
+    } catch (IOException e) {
+      log().error("IOException ");
+      onLoadError(e);
     }
 
     try {
       resetMp();
-    }catch(IOException e) {
+    } catch (IOException e) {
       log().error("IOException thrown building MediaPlayer for sound.");
       onLoadError(e);
     }
@@ -144,7 +132,6 @@ public class AndroidCompressedSound extends AndroidSound {
   void onDestroy() {
     cachedFile.delete();
     if (mp != null) {
-      mp.stop();
       mp.release();
     }
   }

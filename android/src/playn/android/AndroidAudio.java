@@ -21,9 +21,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import playn.core.Audio;
+import playn.core.PlayN;
 import playn.core.Sound;
 
 class AndroidAudio implements Audio {
+  final private static int BYTES_LIMIT = 1024 * 500; // 500 kB
+  
   private List<AndroidSound> sounds = new ArrayList<AndroidSound>();
 
   public AndroidAudio() { }
@@ -39,7 +42,12 @@ class AndroidAudio implements Audio {
      * have written, so we'll use it here regardless of format.
      */
     try {
-      sound = new AndroidCompressedSound(in, extension);
+      // Check audio file size
+      if (in.available() > BYTES_LIMIT) {
+        sound = new AndroidCompressedSound(path, in, extension);
+      } else {
+        sound = new AndroidPooledSound(path, in, extension);
+      }
       sounds.add(sound);
     }catch (IOException e) {
       sound = null;

@@ -17,29 +17,22 @@ package playn.android;
 
 import android.app.ActivityManager;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.LinearGradient;
-import android.graphics.PixelFormat;
-import android.graphics.RadialGradient;
+import android.graphics.*;
 import android.graphics.Shader.TileMode;
 import android.view.View;
-
-import playn.core.Asserts;
-import playn.core.CanvasImage;
-import playn.core.Font;
-import playn.core.Gradient;
-import playn.core.GroupLayer;
-import playn.core.Image;
+import playn.core.*;
 import playn.core.Path;
-import playn.core.Pattern;
-import playn.core.TextFormat;
-import playn.core.TextLayout;
 import playn.core.gl.GLContext;
 import playn.core.gl.GraphicsGL;
 import playn.core.gl.GroupLayerGL;
 import playn.core.gl.SurfaceGL;
 
-class AndroidGraphics extends GraphicsGL {
+import java.util.HashMap;
+import java.util.Map;
+
+import static playn.core.PlayN.log;
+
+public class AndroidGraphics extends GraphicsGL {
 
   private static int startingScreenWidth;
   private static int startingScreenHeight;
@@ -97,7 +90,31 @@ class AndroidGraphics extends GraphicsGL {
    */
   @Override
   public Font createFont(String name, Font.Style style, float size) {
-    return new AndroidFont(name, style, size);
+    if (_fonts.containsKey(name)) {
+      return new AndroidFont(name, _fonts.get(name), style, size);
+    } else {
+      return new AndroidFont(name, style, size);
+    }
+  }
+
+  /**
+   * Registers a font with the graphics system.
+   *
+   * @param name the name under which to register the font.
+   * @param path the path to the font resource (relative to the asset manager's path prefix).
+   */
+  public void registerFont(final String name, final String path) {
+    AndroidPlatform.instance.assets().doGetFont(path, new ResourceCallback<Typeface>() {
+      @Override
+      public void done(Typeface resource) {
+        _fonts.put(name, resource);
+      }
+
+      @Override
+      public void error(Throwable err) {
+        log().warn("Failed to load font [name=" + name + ", path=" + path + "]", err);
+      }
+    });
   }
 
   @Override
@@ -232,4 +249,6 @@ class AndroidGraphics extends GraphicsGL {
     startingScreenWidth = width;
     startingScreenHeight = height;
   }
+
+  protected Map<String,Typeface> _fonts = new HashMap<String,Typeface>();
 }
