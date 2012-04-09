@@ -22,7 +22,8 @@ import playn.core.Touch;
 
 class HtmlTouch extends HtmlInput implements Touch {
   private Listener listener;
-  boolean inTouchSequence = false; // true when we are in a touch sequence (after touch start but before touch end)
+  // keep our touch counter to check touch sequence. event.getTouches() don't given full info about current touches. May be gwt bug
+  int currentTouches = 0;
 
   /**
    * Special implementation of Event.Impl for keeping track of changes to preventDefault
@@ -53,8 +54,8 @@ class HtmlTouch extends HtmlInput implements Touch {
       public void handleEvent(NativeEvent nativeEvent) {
         if (listener != null) {
           if (nativeEvent.getChangedTouches().length() != 0) {
-            inTouchSequence = true;
             listener.onTouchStart(extrudeToucheEvents(nativeEvent,rootElement));
+            incTouches(nativeEvent.getChangedTouches().length());
           } else {
             listener.onTouchStart(new Event[0]);
           }
@@ -66,11 +67,9 @@ class HtmlTouch extends HtmlInput implements Touch {
     capturePageEvent("touchend", new EventHandler() {
       @Override
       public void handleEvent(NativeEvent nativeEvent) {
-        if (listener != null && inTouchSequence) {
+        if (listener != null && isInTouchSequence()) {
           listener.onTouchEnd(extrudeToucheEvents(nativeEvent,rootElement));
-          // if there are no remaining active touches, note that this touch sequence has ended
-          if (nativeEvent.getTouches().length() == 0)
-            inTouchSequence = false;
+          decTouches(nativeEvent.getChangedTouches().length());
         }
       }
     });
@@ -79,7 +78,7 @@ class HtmlTouch extends HtmlInput implements Touch {
     capturePageEvent("touchmove", new EventHandler() {
       @Override
       public void handleEvent(NativeEvent nativeEvent) {
-        if (listener != null && inTouchSequence) {
+        if (listener != null && isInTouchSequence()) {
           listener.onTouchMove(extrudeToucheEvents(nativeEvent,rootElement));
         }
       }
@@ -89,12 +88,22 @@ class HtmlTouch extends HtmlInput implements Touch {
     capturePageEvent("touchcancel", new EventHandler() {
       @Override
       public void handleEvent(NativeEvent nativeEvent) {
-        if (listener != null && inTouchSequence) {
+        if (listener != null && isInTouchSequence()) {
           listener.onTouchCancel(extrudeToucheEvents(nativeEvent,rootElement));
+          decTouches(nativeEvent.getChangedTouches().length());
         }
       }
     });
   }
+
+  // check if we have one or more current touches
+  private boolean isInTouchSequence() { return currentTouches != 0; }
+
+  // increment touch counter
+  private void incTouches(int on) { currentTouches += on; }
+
+  // decrement touch counter
+  private void decTouches(int on) { currentTouches = Math.max(currentTouches - on,0); }
 
   // extrude touche events from native event
   private Event[] extrudeToucheEvents(final NativeEvent fromNativeEvent, final Element rootElement) {
