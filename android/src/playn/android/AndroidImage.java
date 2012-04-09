@@ -22,7 +22,7 @@ import playn.core.ResourceCallback;
 import playn.core.gl.GLContext;
 import playn.core.gl.ImageGL;
 
-class AndroidImage extends ImageGL implements AndroidGLContext.Refreshable {
+public class AndroidImage extends ImageGL implements AndroidGLContext.Refreshable {
   private final AndroidGLContext ctx;
   private final Bitmap bitmap;
 
@@ -32,7 +32,7 @@ class AndroidImage extends ImageGL implements AndroidGLContext.Refreshable {
     ctx.addRefreshable(this);
   }
 
-  Bitmap bitmap() {
+  public Bitmap bitmap() {
     return bitmap;
   }
 

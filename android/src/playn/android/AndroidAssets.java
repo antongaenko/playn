@@ -20,15 +20,13 @@ import static playn.core.PlayN.log;
 import java.io.*;
 
 import android.graphics.Typeface;
+import android.util.DisplayMetrics;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpGet;
 
-import playn.core.AbstractAssets;
-import playn.core.Image;
-import playn.core.ResourceCallback;
-import playn.core.Sound;
+import playn.core.*;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -90,7 +88,19 @@ public class AndroidAssets extends AbstractAssets {
     options.inPreferredConfig = AndroidPlatform.instance.graphics().preferredBitmapConfig;
     // Never scale bitmaps based on device parameters
     options.inScaled = false;
+    //options.inDensity = (int) displayMetrics().density;
+    //options.inTargetDensity = (int) displayMetrics().density;
     return BitmapFactory.decodeStream(is, null, options);
+  }
+
+  private DisplayMetrics displayMetrics;
+
+  private DisplayMetrics displayMetrics() {
+    if (displayMetrics == null) {
+      displayMetrics = new DisplayMetrics();
+      AndroidPlatform.instance.activity.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+    }
+    return displayMetrics;
   }
 
   private Bitmap createErrorBitmap(Exception e) {

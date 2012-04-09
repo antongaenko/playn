@@ -31,3 +31,4 @@ pythagoras
 /tests/flash/war/WEB-INF/classes
 
 *.iml
+/.idea
