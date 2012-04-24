@@ -164,6 +164,8 @@ public class AndroidCompressedSound extends AndroidSound {
       mp.setLooping(looping);
       mp.setVolume(volume, volume);
       mp.prepareAsync();
+    } catch (IllegalStateException e) {
+      onLoadError(e);
     } finally {
       ins.close();
     }
